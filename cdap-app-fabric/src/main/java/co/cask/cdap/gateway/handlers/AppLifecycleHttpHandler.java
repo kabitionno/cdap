@@ -169,9 +169,6 @@ public class AppLifecycleHttpHandler extends AbstractAppFabricHttpHandler {
     throws BadRequestException, NamespaceNotFoundException {
 
     NamespaceId namespace = validateNamespace(namespaceId);
-    if (namespace.equals(NamespaceId.SYSTEM)) {
-      throw new BadRequestException("Cannot create application with new artifacts in system namespace");
-    }
     // null means use name provided by app spec
     try {
       return deployApplication(responder, namespace, null, archiveName, configString, ownerPrincipal, updateSchedules);

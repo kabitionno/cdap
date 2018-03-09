@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
  */
 public class SchedulerQueueResolver {
   private final String defaultQueue;
+  private final String systemQueue;
   private final NamespaceQueryAdmin namespaceQueryAdmin;
 
   /**
@@ -44,6 +45,7 @@ public class SchedulerQueueResolver {
   @Inject
   public SchedulerQueueResolver(CConfiguration cConf, NamespaceQueryAdmin namespaceQueryAdmin) {
     this.defaultQueue = cConf.get(Constants.AppFabric.APP_SCHEDULER_QUEUE, "");
+    this.systemQueue = cConf.get(Constants.Service.SCHEDULER_QUEUE, "");
     this.namespaceQueryAdmin = namespaceQueryAdmin;
   }
 
@@ -63,7 +65,7 @@ public class SchedulerQueueResolver {
   @Nullable
   public String getQueue(Id.Namespace namespaceId) throws IOException, NamespaceNotFoundException {
     if (namespaceId.equals(NamespaceId.SYSTEM.toId())) {
-      return getDefaultQueue();
+      return systemQueue;
     }
     NamespaceMeta meta;
     try {
