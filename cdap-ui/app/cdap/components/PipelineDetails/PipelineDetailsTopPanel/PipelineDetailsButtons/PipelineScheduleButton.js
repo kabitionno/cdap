@@ -96,7 +96,7 @@ export default class PipelineScheduleButton extends Component {
         isDetailView={true}
         isBatch={this.props.isBatch}
         pipelineName={this.props.pipelineName}
-        saveAction={schedulePipeline}
+        action={schedulePipeline}
       />
     );
   }
