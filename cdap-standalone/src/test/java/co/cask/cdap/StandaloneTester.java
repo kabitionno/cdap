@@ -23,6 +23,7 @@ import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.utils.Networks;
 import co.cask.cdap.common.utils.Tasks;
 import co.cask.cdap.internal.app.runtime.artifact.ArtifactRepository;
+import co.cask.cdap.internal.app.runtime.artifact.DefaultArtifactRepository;
 import co.cask.cdap.proto.id.ArtifactId;
 import co.cask.cdap.proto.id.NamespaceId;
 import com.google.common.base.Preconditions;
@@ -127,7 +128,7 @@ public class StandaloneTester extends ExternalResource {
    */
   public void addSystemArtifact(String name, ArtifactVersion version, File artifactFile,
                                 @Nullable Set<ArtifactRange> parentArtifacts) throws Exception {
-    ArtifactRepository artifactRepository = standaloneMain.getInjector().getInstance(ArtifactRepository.class);
+    ArtifactRepository artifactRepository = standaloneMain.getInjector().getInstance(DefaultArtifactRepository.class);
 
     ArtifactId artifactId = NamespaceId.SYSTEM.artifact(name, version.getVersion());
     artifactRepository.addArtifact(artifactId.toId(), artifactFile, parentArtifacts, null);
