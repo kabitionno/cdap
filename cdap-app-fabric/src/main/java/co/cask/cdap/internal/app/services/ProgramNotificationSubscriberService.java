@@ -23,14 +23,10 @@ import co.cask.cdap.api.data.DatasetContext;
 import co.cask.cdap.api.dataset.DatasetManagementException;
 import co.cask.cdap.api.dataset.DatasetProperties;
 import co.cask.cdap.api.dataset.table.Table;
-import co.cask.cdap.api.messaging.MessagePublisher;
 import co.cask.cdap.api.metrics.MetricsCollectionService;
 import co.cask.cdap.api.retry.RetryableException;
-import co.cask.cdap.common.ServiceUnavailableException;
 import co.cask.cdap.common.conf.CConfiguration;
 import co.cask.cdap.common.conf.Constants;
-import co.cask.cdap.common.logging.LogSamplers;
-import co.cask.cdap.common.logging.Loggers;
 import co.cask.cdap.data2.datafabric.dataset.DatasetsUtil;
 import co.cask.cdap.data2.dataset2.DatasetFramework;
 import co.cask.cdap.internal.app.runtime.ProgramOptionConstants;
@@ -219,7 +215,7 @@ public class ProgramNotificationSubscriberService extends AbstractNotificationSu
           }
           Map<String, String> userArguments = GSON.fromJson(userArgumentsString, STRING_STRING_MAP);
           Map<String, String> systemArguments = GSON.fromJson(systemArgumentsString, STRING_STRING_MAP);
-          recordedStatus = appMetadataStore.recordProgramStart(programId, runId, startTimeSecs, twillRunId,
+          recordedStatus = appMetadataStore.recordProgramStart(programRunId, startTimeSecs, twillRunId,
                                                                userArguments, systemArguments, messageIdBytes);
           break;
         case RUNNING:
@@ -231,13 +227,13 @@ public class ProgramNotificationSubscriberService extends AbstractNotificationSu
             return;
           }
           recordedStatus =
-            appMetadataStore.recordProgramRunning(programId, runId, logicalStartTimeSecs, twillRunId, messageIdBytes);
+            appMetadataStore.recordProgramRunning(programRunId, logicalStartTimeSecs, twillRunId, messageIdBytes);
           break;
         case SUSPENDED:
-          recordedStatus = appMetadataStore.recordProgramSuspend(programId, runId, messageIdBytes);
+          recordedStatus = appMetadataStore.recordProgramSuspend(programRunId, messageIdBytes);
           break;
         case RESUMING:
-          recordedStatus = appMetadataStore.recordProgramResumed(programId, runId, messageIdBytes);
+          recordedStatus = appMetadataStore.recordProgramResumed(programRunId, messageIdBytes);
           break;
         case COMPLETED:
         case KILLED:
@@ -247,7 +243,7 @@ public class ProgramNotificationSubscriberService extends AbstractNotificationSu
             return;
           }
           recordedStatus =
-            appMetadataStore.recordProgramStop(programId, runId, endTimeSecs, programRunStatus, null, messageIdBytes);
+            appMetadataStore.recordProgramStop(programRunId, endTimeSecs, programRunStatus, null, messageIdBytes);
           break;
         case FAILED:
           if (endTimeSecs == -1) {
@@ -257,7 +253,7 @@ public class ProgramNotificationSubscriberService extends AbstractNotificationSu
           }
           BasicThrowable cause = decodeBasicThrowable(properties.get(ProgramOptionConstants.PROGRAM_ERROR));
           recordedStatus =
-            appMetadataStore.recordProgramStop(programId, runId, endTimeSecs, programRunStatus, cause, messageIdBytes);
+            appMetadataStore.recordProgramStop(programRunId, endTimeSecs, programRunStatus, cause, messageIdBytes);
           break;
         default:
           // This should not happen
